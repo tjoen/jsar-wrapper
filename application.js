@@ -22,14 +22,23 @@ requirejs( ['./webcam','./augmented','detector','createjs'], function(webcam,aug
         subsystemElement.appendChild(canvas);
         var context = canvas.getContext('2d');
 
-        function markerCallback(id, matrix) {
-            console.log(id,matrix);
+
+        function onMarkerCreated(marker) {
+            console.log("created:", marker);
+        }
+
+        function onMarkerUpdated(marker) {
+            console.log("updated:", marker);
+        }
+
+        function onMarkerDestroyed(marker) {
+            console.log("destroyed:", marker);
         }
 
         var update =  function() {
             webcam.drawToContext(context);
             canvas.changed = true;
-            ar.detect( markerCallback );
+            ar.detect( onMarkerCreated, onMarkerUpdated, onMarkerDestroyed );
             aug1.update();
         }
 

@@ -26,7 +26,7 @@ define(['threejs','jsar'],function() {
             return result;
         }
 
-        var convertArToGl = function(mat) {
+        var convertToGl = function(mat) {
             var cm = new Float32Array(16);
             cm[0] = mat.m00;
             cm[1] = -mat.m10;
@@ -50,13 +50,44 @@ define(['threejs','jsar'],function() {
         var getTransformMatrix = function(idx) {
             var resultMat = new NyARTransMatResult();
             FLARDetector.getTransformMatrix(idx, resultMat);
-            return convertArToGl(resultMat);
+            return convertToGl(resultMat);
         }
 
-        var detect = function( callback ) {
+        var persistTime = 1;
+        var newMarker = function(id, matrix) {
+            return {
+                id: id,
+                matrix: matrix,
+                age: persistTime,
+            }
+        }
+
+        var markers = {};
+        var detect = function( onCreate, onUpdate, onDestroy ) {
             var markerCount = FLARDetector.detectMarkerLite(raster, 60); 
             for( var index = 0; index < markerCount; index++ ) {
-                callback( getMarkerNumber(index), getTransformMatrix(index) );
+                var id = getMarkerNumber(index);
+                var marker = markers[id];
+                if( marker === undefined ) {
+                    marker = newMarker(id, getTransformMatrix(index));
+                    markers[id] = marker;
+                    onCreate( marker );
+                }
+                else {
+                    marker.matrix = getTransformMatrix(index);
+                    marker.age = persistTime;
+                    onUpdate( marker );
+                }
+            }
+
+            for( var id in markers ) {
+                var marker = markers[id];
+                if( marker ) {
+                    if( marker.age-- == 0 ) {
+                        onDestroy( marker );
+                        delete markers[id];
+                    }
+                }
             }
         }
 
@@ -65,7 +96,6 @@ define(['threejs','jsar'],function() {
             getCameraMatrix: getCameraMatrix,
         }
     }
-
 
     return {
         create: create,
