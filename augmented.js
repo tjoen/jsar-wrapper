@@ -16,30 +16,38 @@ define(["threejs"], function() {
         renderer.setSize(dimensions.width, dimensions.height);
         renderer.autoClear = false;
 
-        var reality = {
-            camera: new THREE.Camera(),
-            scene: new THREE.Scene(),
-        }
+        var reality = (function(){
+            var texture = new THREE.Texture(sourceCanvas);
+            var camera = new THREE.Camera();
+            var scene = new THREE.Scene();
+            scene.add( new THREE.Mesh(
+               new THREE.PlaneGeometry(2, 2, 0),
+               new THREE.MeshBasicMaterial({
+                   map: texture,
+                   depthTest: false,
+                   depthWrite: false
+               })
+            ));
+
+            function update() {
+                texture.needsUpdate = true;
+            }
+
+            return {
+                camera: camera,
+                scene: scene,
+                update: update, 
+            }
+        })();
 
         var augmentation = {
             camera: new THREE.Camera(),
             scene: new THREE.Scene(),
         }
 
-        var texture = new THREE.Texture(sourceCanvas);
-        var plane = new THREE.Mesh(
-           new THREE.PlaneGeometry(2, 2, 0),
-           new THREE.MeshBasicMaterial({
-               map: texture,
-               depthTest: false,
-               depthWrite: false
-           })
-        );
-        reality.scene.add(plane);
-
         return {
             update: function() {
-                texture.needsUpdate = true;
+                reality.update();
             },
             render: function() {
                 renderer.render(reality.scene, reality.camera);
