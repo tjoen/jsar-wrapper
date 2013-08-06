@@ -71,7 +71,7 @@ define(["threejs"], function() {
             },
             canvas: canvas,
             addModel: addModel,
-            removeModel: removeModel
+            removeModel: removeModel,
             setCameraMatrix: setCameraMatrix,
         }
     }

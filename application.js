@@ -33,7 +33,6 @@ requirejs( ['./webcam','./augmented','detector','createjs','threejs'], function(
             return that;
         }
 
-
         var markerModels = {
             16: createBaseModel(),
             32: createBaseModel(),
