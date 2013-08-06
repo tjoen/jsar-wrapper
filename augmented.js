@@ -40,25 +40,25 @@ define(["threejs"], function() {
             }
         })();
 
-        var augmentation = {
+        var virtual = {
             camera: new THREE.Camera(),
             scene: new THREE.Scene(),
         }
 
         var spotLight = new THREE.PointLight(0xcccccc);
         spotLight.position.set(0, 0, 2500);
-        augmentation.scene.add(spotLight);
+        virtual.scene.add(spotLight);
 
         function addModel(model) {
-            augmentation.scene.add(model);
+            virtual.scene.add(model);
         }
 
         function removeModel(model) {
-            augmentation.scene.remove(model);
+            virtual.scene.remove(model);
         }
 
         function setCameraMatrix( matrix ) {
-            augmentation.camera.projectionMatrix.setFromArray( matrix );
+            virtual.camera.projectionMatrix.setFromArray( matrix );
         }
 
         return {
@@ -67,7 +67,7 @@ define(["threejs"], function() {
             },
             render: function() {
                 renderer.render(reality.scene, reality.camera);
-                renderer.render(augmentation.scene, augmentation.camera);
+                renderer.render(virtual.scene, virtual.camera);
             },
             canvas: canvas,
             addModel: addModel,
