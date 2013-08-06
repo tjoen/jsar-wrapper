@@ -45,6 +45,10 @@ define(["threejs"], function() {
             scene: new THREE.Scene(),
         }
 
+        var spotLight = new THREE.PointLight(0xcccccc);
+        spotLight.position.set(0, 0, 2500);
+        augmentation.scene.add(spotLight);
+
         function addModel(model) {
             augmentation.scene.add(model);
         }
