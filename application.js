@@ -33,23 +33,20 @@ requirejs( ['./webcam','./augmented','detector','createjs','threejs'], function(
             return that;
         }
 
+        function createMarkerModel(color) {
+            var mesh = new THREE.Mesh(
+                new THREE.CubeGeometry( 100,100,100 ),
+                new THREE.MeshBasicMaterial( {color:color, side:THREE.DoubleSide } )
+            );
+            var result = createBaseModel();
+            result.model.add(mesh);
+            return result;
+        }
+
         var markerModels = {
-            16: createBaseModel(),
-            32: createBaseModel(),
+            16: createMarkerModel(0xAA0000),
+            32: createMarkerModel(0x00BB00),
         };
-
-        var meshA = new THREE.Mesh(
-            new THREE.CubeGeometry( 100,100,100 ),
-            new THREE.MeshBasicMaterial( {color:0x4169E1, side:THREE.DoubleSide } )
-        );
-
-        var meshB = new THREE.Mesh(
-            new THREE.CubeGeometry( 100,100,100 ),
-            new THREE.MeshBasicMaterial( {color:0x4169E1, side:THREE.DoubleSide } )
-        );
-
-        markerModels[16].model.add( meshA );
-        markerModels[32].model.add( meshB );
 
         function onMarkerCreated(marker) {
             markerModels[marker.id].transform( marker.matrix );
