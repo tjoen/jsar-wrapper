@@ -12,7 +12,7 @@ requirejs.config({
     },
 });
 
-requirejs( ['./webcam','./augmented','detector','createjs'], function(webcam,augmented,detector) {
+requirejs( ['./webcam','./augmented','detector','createjs','threejs'], function(webcam,augmented,detector) {
     var go = function() {
         var canvas = document.createElement('canvas');
         var webcamDimensions = webcam.getDimensions();
@@ -22,17 +22,47 @@ requirejs( ['./webcam','./augmented','detector','createjs'], function(webcam,aug
         subsystemElement.appendChild(canvas);
         var context = canvas.getContext('2d');
 
+        var createBaseModel = function() {
+            var that = {};
+            that.model = new THREE.Object3D();
+            that.model.matrixAutoUpdate = false;
+            that.transform = function(matrix) {
+                that.model.matrix.setFromArray( matrix );
+                that.model.matrixWorldNeedsUpdate = true;
+            }
+            return that;
+        }
+
+
+        var markerModels = {
+            16: createBaseModel(),
+            32: createBaseModel(),
+        };
+
+        var meshA = new THREE.Mesh(
+            new THREE.CubeGeometry( 100,100,100 ),
+            new THREE.MeshBasicMaterial( {color:0x4169E1, side:THREE.DoubleSide } )
+        );
+
+        var meshB = new THREE.Mesh(
+            new THREE.CubeGeometry( 100,100,100 ),
+            new THREE.MeshBasicMaterial( {color:0x4169E1, side:THREE.DoubleSide } )
+        );
+
+        markerModels[16].model.add( meshA );
+        markerModels[32].model.add( meshB );
 
         function onMarkerCreated(marker) {
-            console.log("created:", marker);
+            markerModels[marker.id].transform( marker.matrix );
+            aug1.addModel( markerModels[marker.id].model );
         }
 
         function onMarkerUpdated(marker) {
-            console.log("updated:", marker);
+            markerModels[marker.id].transform( marker.matrix );
         }
 
         function onMarkerDestroyed(marker) {
-            console.log("destroyed:", marker);
+            aug1.removeModel( markerModels[marker.id].model );
         }
 
         var update =  function() {
@@ -54,6 +84,7 @@ requirejs( ['./webcam','./augmented','detector','createjs'], function(webcam,aug
         var aug1 = augmented.create( webcam.getDimensions(), canvas );
         subsystemElement.appendChild( aug1.canvas );
         var ar = detector.create( canvas );
+        aug1.setCameraMatrix( ar.getCameraMatrix(10,10000) );
 
         createjs.Ticker.useRAF = true;
         createjs.Ticker.setFPS(30);

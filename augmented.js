@@ -45,14 +45,30 @@ define(["threejs"], function() {
             scene: new THREE.Scene(),
         }
 
+        function addModel(model) {
+            augmentation.scene.add(model);
+        }
+
+        function removeModel(model) {
+            augmentation.scene.remove(model);
+        }
+
+        function setCameraMatrix( matrix ) {
+            augmentation.camera.projectionMatrix.setFromArray( matrix );
+        }
+
         return {
             update: function() {
                 reality.update();
             },
             render: function() {
                 renderer.render(reality.scene, reality.camera);
+                renderer.render(augmentation.scene, augmentation.camera);
             },
             canvas: canvas,
+            addModel: addModel,
+            removeModel: removeModel
+            setCameraMatrix: setCameraMatrix,
         }
     }
 
