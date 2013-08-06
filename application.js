@@ -12,14 +12,12 @@ requirejs.config({
     },
 });
 
-requirejs( ['./webcam','./augmented','detector','createjs','threejs'], function(webcam,augmented,detector) {
+requirejs( ['./webcam','./arview','detector','createjs','threejs'], function(webcam,arview,detector) {
     var go = function() {
         var canvas = document.createElement('canvas');
         var webcamDimensions = webcam.getDimensions();
         canvas.width = webcamDimensions.width;
         canvas.height = webcamDimensions.height;
-        var subsystemElement = document.getElementById("subsystem");
-        subsystemElement.appendChild(canvas);
         var context = canvas.getContext('2d');
 
         var createBaseModel = function() {
@@ -77,8 +75,8 @@ requirejs( ['./webcam','./augmented','detector','createjs','threejs'], function(
             render();
         }
 
-        var aug1 = augmented.create( webcam.getDimensions(), canvas );
-        subsystemElement.appendChild( aug1.canvas );
+        var aug1 = arview.create( webcam.getDimensions(), canvas );
+        document.getElementById("application").appendChild( aug1.canvas );
         var ar = detector.create( canvas );
         aug1.setCameraMatrix( ar.getCameraMatrix(10,10000) );
 
