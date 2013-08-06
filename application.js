@@ -48,7 +48,7 @@ requirejs( ['./webcam','./arview','./ardetector','createjs','threejs'], function
 
         function onMarkerCreated(marker) {
             markerModels[marker.id].transform( marker.matrix );
-            aug1.addModel( markerModels[marker.id].model );
+            view.addModel( markerModels[marker.id].model );
         }
 
         function onMarkerUpdated(marker) {
@@ -56,18 +56,18 @@ requirejs( ['./webcam','./arview','./ardetector','createjs','threejs'], function
         }
 
         function onMarkerDestroyed(marker) {
-            aug1.removeModel( markerModels[marker.id].model );
+            view.removeModel( markerModels[marker.id].model );
         }
 
         var update =  function() {
             webcam.drawToContext(context);
             canvas.changed = true;
-            ar.detect( onMarkerCreated, onMarkerUpdated, onMarkerDestroyed );
-            aug1.update();
+            detector.detect( onMarkerCreated, onMarkerUpdated, onMarkerDestroyed );
+            view.update();
         }
 
         var render = function() {
-            aug1.render();
+            view.render();
         }
 
         function tick(params) {
@@ -75,10 +75,10 @@ requirejs( ['./webcam','./arview','./ardetector','createjs','threejs'], function
             render();
         }
 
-        var aug1 = arview.create( webcam.getDimensions(), canvas );
-        document.getElementById("application").appendChild( aug1.canvas );
-        var ar = ardetector.create( canvas );
-        aug1.setCameraMatrix( ar.getCameraMatrix(10,10000) );
+        var view = arview.create( webcam.getDimensions(), canvas );
+        document.getElementById("application").appendChild( view.canvas );
+        var detector = ardetector.create( canvas );
+        view.setCameraMatrix( detector.getCameraMatrix(10,10000) );
 
         createjs.Ticker.useRAF = true;
         createjs.Ticker.setFPS(30);
